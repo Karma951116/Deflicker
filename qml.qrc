@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+    </qresource>
+    <qresource prefix="/Components">
+        <file>FolderSelector.qml</file>
+        <file>MediaPanel.qml</file>
+        <file>Titlebar.qml</file>
+    </qresource>
+</RCC>
