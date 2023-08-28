@@ -22,6 +22,7 @@ SOURCES += \
         imageloader.cpp \
         main.cpp \
         sequencebuffer.cpp \
+        workerlinearbm.cpp \
         workerlinearffmpeg.cpp \
         workerlinearlzy.cpp
 
@@ -45,6 +46,7 @@ HEADERS += \
     imagecanvas.h \
     imageloader.h \
     sequencebuffer.h \
+    workerlinearbm.h \
     workerlinearffmpeg.h \
     workerlinearlzy.h
 

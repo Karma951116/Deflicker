@@ -33,7 +33,7 @@ void ImageLoader::load(QString path)
         qDebug() << "Image dir not exist!";
     }
     QStringList fileFilter;
-    fileFilter << "*.dpx" << "*.png" << "*.jpg";
+    fileFilter << "*.dpx" << "*.png" << "*.jpg" << "*.tif";
     QFileInfoList sequence = dir.entryInfoList(fileFilter,
                                                QDir::Files | QDir::NoDotAndDotDot | QDir::Readable,
                                                QDir::Name);
@@ -96,7 +96,7 @@ void ImageLoader::load(QString path)
         avcodec_receive_frame(codecCtx, frame);
         if (srcFmt == AV_PIX_FMT_NONE) {
             srcFmt = (AVPixelFormat)frame->format;
-            dstFmt = AV_PIX_FMT_RGBA64LE;
+            dstFmt = AV_PIX_FMT_BGR24;
         }
         if (!(frame->width < 0 || frame->height < 0)) {
             if (swsCtx == nullptr) {
@@ -110,7 +110,7 @@ void ImageLoader::load(QString path)
                                         SWS_BICUBIC, nullptr,
                                         nullptr, nullptr);
             }
-            cv::Mat mat(frame->width, frame->height, CV_16UC4);
+            cv::Mat mat(cv::Size(frame->width, frame->height), CV_8UC3);
             SwsContext *swsCtx = sws_getContext(frame->width, frame->height,
                                                 srcFmt,
                                                 frame->width, frame->height,
@@ -125,6 +125,7 @@ void ImageLoader::load(QString path)
         }
     }
     sequenceUpdate();
+    qDebug() << "Image Load End";
 }
 
 void ImageLoader::onDecodeFinished(int index, cv::Mat mat)

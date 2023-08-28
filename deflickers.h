@@ -22,7 +22,8 @@ class GlobalDeflicker: public QObject {
 public:
     enum GlobalMethod {
         LINEAR_LZY,
-        LINEAR_FFMPEG
+        LINEAR_FFMPEG,
+        LINEAR_BLOCK_MATCH
     };
     explicit GlobalDeflicker(SequenceBuffer* srcBuffer, SequenceBuffer* dstBuffer);
     Q_INVOKABLE void process();

@@ -68,7 +68,7 @@ void WorkerLinearLzy::run()
         }
         srcMean /= srcLuminance_->size();
         for (int i = 1; i < srcBuffer_->nbFrames(); i++) {
-            float alpha = NULL, beta = NULL;
+            float alpha = 0.0, beta = 0.0;
             cv::Mat prevImg = dstBuffer_->read(i - 1);
             cv::Mat curImg = srcBuffer_->read(i);
             int pixs = curImg.rows * curImg.cols;
@@ -78,8 +78,8 @@ void WorkerLinearLzy::run()
             // 对于黑白图像取任意通道值
             for (int row = 0; row < curImg.rows; row++) {
                 for (int col = 0; col < curImg.cols; col++) {
-                    double prevPix = prevImg.at<cv::Vec3w>(row, col)[0] / 65536.0;
-                    double curPix = curImg.at<cv::Vec3w>(row, col)[0] / 65536.0;
+                    double prevPix = prevImg.at<cv::Vec3w>(row, col)[0] / 65535.0;
+                    double curPix = curImg.at<cv::Vec3w>(row, col)[0] / 65535.0;
                     crossSum1 += (prevPix * curPix);
                     crossSum2 += (prevPix * prevPix);
                     preLumSum += prevPix;

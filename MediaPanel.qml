@@ -59,7 +59,7 @@ Rectangle {
             anchors.left: parent.left
             text: "处理"
             onClicked: {
-                globalDeflicker.process(srcBuffer, dstBuffer);
+                globalDeflicker.process();
             }
         }
 
@@ -94,7 +94,7 @@ Rectangle {
         ValueAxis {
             id: hist_axisX
             min: 0
-            max: 65536
+            max: 65535
             tickInterval: 1
         }
         ValueAxis {
@@ -129,13 +129,13 @@ Rectangle {
         ValueAxis {
             id: lum_axisX
             min: 0
-            max: 65536
+            max: 65535
             tickInterval: 10
         }
         ValueAxis {
             id: lum_axisY
             min: 0
-            max: 65536
+            max: 65535
             tickInterval: 1000
         }
         SplineSeries {
@@ -206,7 +206,6 @@ Rectangle {
         target: srcBuffer
         onIndexChanged: {
             origin.updateFrame();
-            //calHist();
         }
     }
 
@@ -214,14 +213,14 @@ Rectangle {
         target: globalDeflicker
         onCalcDstMeanDone: {
             updateLum();
-            updateHist();
+            //updateHist();
         }
     }
 
     Connections {
         target: root
         onShowHist: {
-            updateHist();
+            //updateHist();
         }
     }
 

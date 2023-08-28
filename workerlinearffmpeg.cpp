@@ -88,7 +88,7 @@ void WorkerLinearFFMPEG::run()
             for (int col = 0; col < dstMat.cols; col++) {
                 double pix = dstMat.at<cv::Vec3w>(row, col)[0];
                 if (pix < 0) pix = 0;
-                else if (pix > 65536) pix = 65536;
+                else if (pix > 65535) pix = 65535;
             }
         }
         dstBuffer_->append(dstMat);

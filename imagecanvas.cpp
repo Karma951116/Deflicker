@@ -31,7 +31,7 @@ void ImageCanvas::updateFrame()
     cv::Mat mat = buffer_->read();
 //    cv::Mat matDisp;
 //    mat.convertTo(matDisp, CV_8UC3);
-    image_ = QImage(mat.data, mat.rows, mat.cols, QImage::Format_RGBA64).copy();
+    image_ = QImage(mat.data, mat.cols, mat.rows, QImage::Format_BGR888).copy();
     update();
 }
 

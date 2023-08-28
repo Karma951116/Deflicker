@@ -1,7 +1,7 @@
 #include "deflickers.h"
 #include "workerlinearlzy.h"
 #include "workerlinearffmpeg.h"
-
+#include "workerlinearbm.h"
 
 #include <QDebug>
 
@@ -10,7 +10,7 @@ using namespace Deflickers;
 GlobalDeflicker::GlobalDeflicker(SequenceBuffer *srcBuffer, SequenceBuffer *dstBuffer)
 {
     curWork_ = nullptr;
-    type_ = LINEAR_LZY;
+    type_ = LINEAR_BLOCK_MATCH;
     srcBuffer_ = srcBuffer;
     dstBuffer_ = dstBuffer;
     srcLuminance_ = QList<double>();
@@ -35,7 +35,7 @@ void GlobalDeflicker::process() {
         connect(worker, SIGNAL(procDone()), this, SLOT(onProcDone()));
         break;
     }
-    case LINEAR_FFMPEG:
+    case LINEAR_FFMPEG: {
         WorkerLinearFFMPEG* worker = new WorkerLinearFFMPEG(srcBuffer_, dstBuffer_,
                                                          WorkerLinearFFMPEG::CUBIC_MEAN,
                                                          &srcLuminance_, &dstLuminance_);
@@ -44,6 +44,16 @@ void GlobalDeflicker::process() {
         connect(worker, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(worker, SIGNAL(procDone()), this, SLOT(onProcDone()));
         break;
+    }
+    case LINEAR_BLOCK_MATCH: {
+        WorkerLinearBM* worker = new WorkerLinearBM(srcBuffer_, dstBuffer_,
+                                                    WorkerLinearBM::NTSS);
+        curWork_ = worker;
+        worker->start();
+        connect(worker, SIGNAL(finished()), this, SLOT(onFinished()));
+        connect(worker, SIGNAL(procDone()), this, SLOT(onProcDone()));
+        break;
+    }
     }
 }
 
@@ -93,7 +103,7 @@ void GlobalDeflicker::onSequenceUpdate()
     double pixels = 0;
     for (int idx = 0; idx < srcBuffer_->nbFrames(); idx++) {
         cv::Mat mat = srcBuffer_->read();
-        if (pixels == NULL) {
+        if (pixels == 0) {
             pixels = mat.rows * mat.cols;
         }
         double luminance = 0;
@@ -104,7 +114,7 @@ void GlobalDeflicker::onSequenceUpdate()
         }
         double mean = luminance / pixels;
         srcLuminance_.append(mean);
-        srcHist_.append(getHist(mat));
+        // srcHist_.append(getHist(mat));
         srcBuffer_->next();
     }
     srcBuffer_->setIndex(0);
@@ -143,7 +153,7 @@ void GlobalDeflicker::onProcDone()
     dstHist_.empty();
     for (int idx = 0; idx < dstBuffer_->nbFrames(); idx++) {
         cv::Mat mat = dstBuffer_->read();
-        if (pixels == NULL) {
+        if (pixels == 0) {
             pixels = mat.rows * mat.cols;
         }
         double luminance = 0;
@@ -154,7 +164,7 @@ void GlobalDeflicker::onProcDone()
         }
         double mean = luminance / pixels;
         dstLuminance_.append(mean);
-        dstHist_.append(getHist(mat));
+        //dstHist_.append(getHist(mat));
         dstBuffer_->next();
     }
     dstBuffer_->setIndex(0);
