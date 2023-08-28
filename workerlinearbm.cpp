@@ -60,26 +60,20 @@ void WorkerLinearBM::run()
         cv::Mat prevImg = srcBuffer_->read(i - 1).clone();
         cv::Mat curImg = srcBuffer_->read(i).clone();
 
-//        QList<cv::Point> motionVectors =
-//                FunctionTools::newThreeStepsSearch(prevImg, curImg,
-//                                                   blockList,
-//                                                   FunctionTools::BlockMatchMethod::MSE);
+        QList<cv::Point> motionVectors =
+                FunctionTools::newThreeStepsSearch(prevImg, curImg,
+                                                   blockList,
+                                                   FunctionTools::BlockMatchMethod::MSE);
 
         // 获取前后帧匹配块进行处理
         for (int j = 0; j < blockList.size(); j++) {
             cv::Rect curBlock = blockList[j];
-            //cv::Rect prevBlock = curBlock + motionVectors[j];
-//            if (prevBlock.x < 0 || prevBlock.y < 0) {
-//                qDebug() << j;
-//            }
+            cv::Rect prevBlock = curBlock + motionVectors[j];
+            if (prevBlock.x < 0 || prevBlock.y < 0) {
+                qDebug() << j;
+            }
             cv::Mat curBlockMat(curImg, curBlock);
-            cv::Mat res;
-            cv::matchTemplate(prevImg, curBlockMat, res, cv::TM_SQDIFF);
-            cv::Point minLoc, maxLoc;
-            cv::minMaxLoc(res, nullptr, nullptr, &minLoc, &maxLoc);
-            cv::Mat prevBlockMat(prevImg, cv::Rect(minLoc, cv::Point(minLoc.x + blockSize,
-                                                                     minLoc.y + blockSize)));
-            //cv::Mat prevBlockMat(prevImg, prevBlock);
+            cv::Mat prevBlockMat(prevImg, prevBlock);
             // 计算块亮度均值，排除非闪烁区域
             double curMean = FunctionTools::getMatMean(curBlockMat);
             double curStdDev = FunctionTools::getMatStdDev(curBlockMat, curMean);

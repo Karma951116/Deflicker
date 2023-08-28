@@ -96,7 +96,7 @@ void ImageLoader::load(QString path)
         avcodec_receive_frame(codecCtx, frame);
         if (srcFmt == AV_PIX_FMT_NONE) {
             srcFmt = (AVPixelFormat)frame->format;
-            dstFmt = AV_PIX_FMT_BGR24;
+            dstFmt = AV_PIX_FMT_RGBA64LE;
         }
         if (!(frame->width < 0 || frame->height < 0)) {
             if (swsCtx == nullptr) {
@@ -110,7 +110,7 @@ void ImageLoader::load(QString path)
                                         SWS_BICUBIC, nullptr,
                                         nullptr, nullptr);
             }
-            cv::Mat mat(cv::Size(frame->width, frame->height), CV_8UC3);
+            cv::Mat mat(cv::Size(frame->width, frame->height), CV_16UC3);
             SwsContext *swsCtx = sws_getContext(frame->width, frame->height,
                                                 srcFmt,
                                                 frame->width, frame->height,
